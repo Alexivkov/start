@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	
+
+<script>
+
+//$(document).ready (function() {
+	allProducts = [
+		{name:'red',price:50, category:'color'},
+		{name:'blue',price:60, category:'color'},
+		{name:'green',price:70, category:'color'},
+		{name:'old',price:80, category:'age'},
+		{name:'young',price:70, category:'age'}
+	];
+
+	cart = [];
+	categories = [];
+	currentProducts = [];
+
+	idx = 0;
+
+	while (idx < allProducts.length) 
+	{ //проходим по массиву и создаем уникальные категории
+		category = allProducts[idx].category;
+		if (categories.indexOf (category) == -1) 
+		{//indexOf если элемента нет в массиве - 	возвращает -1, а если есть возвращает его индекс
+			categories.push (category);
+		}
+		idx = idx + 1;
+	}
+
+	console.log (categories,'categories')
+	ui.showCategories (categories);
+
+
+	function sortProductsByName(product1, product2)
+	{
+		if (product1.name > product2.name)
+		{
+			return 1;//product1 after product 2 because product1 more product 2
+		}else if (product2.name > product1.name)
+		{
+			return -1;
+		}else
+		{
+			return 0; // same products not change sort
+		}
+	}	
+
+	function sortProductsByPrice (product1, product2)
+	{
+		// если 1 дороже, то разность больше 0, 1 будет левее
+		return product1.price - product2.price;
+	}
+
+	ui.on ('change', function (data)
+		{
+
+			if(data.event == 'select category')
+			{
+				if (data.name = 'Все')
+				{
+					products = allProducts.filter( function(product)
+					{
+					return product.category == data.name;
+					// filter
+					});
+				}
+				//sort by alphabet
+				//products = product.sort(sortProductsByName);
+
+				//obnovlyaem spisok productov tek category
+				currentProducts = products;
+
+				//prosim interface show product rubriki
+				ui.showProducts(products);
+			
+			} else if (data.event == 'add_product')
+			{
+				//dobavlyaem product v korzinu
+
+				product = allProducts.find( function(prod){
+					return prod.name == data.name; // data.name - name dobavlennogo produkta
+				});
+				if(product != null)
+				{
+					cart.push(product);
+				}
+			//pereschitivaem i obnovlyaem korzinu
+				updateCart();
+
+			} else if (data.event == 'remove_product')
+			{
+				cart.splice(data, index, 1);
+
+				updateCart();
+
+			} else if (data.event == 'sort_product')
+			{	
+				if(data.type == 'price')
+				{
+					currentProducts =currentProducts.sort(function(product1, product2){
+						if (product1.name > product2.name)
+						{
+							return 1;//product1 after product 2 because product1 more product 2
+						}else if (product2.name > product1.name)
+						{
+							return -1;
+						}else
+						{
+							return 0; // same products not change sort
+						}
+					});	
+					//sort
+				}	
+
+				ui.showProducts(products);
+
+			}else if (data.type == 'name')
+			{
+					currentProducts = currentProducts(sortProductsByName);
+			
+
+			} else if (data.event == 'order'){
+			hasDrinks = cart.some( function(product){
+				//vozvrat true if category drink
+				return product.category == 'Напитки';
+			});
+				//some
+				//every
+			if(!hasDrinks && ui.userWantsDrinks()){
+				ui.setCategory('Напитки');
+			}else{
+				ui.orderSuccess();
+
+				cart.length = 0;
+
+				//очищаем после оформления заказа
+				//while (cart.length){
+				//cart.pop(); // вытаскиваем последний элемент
+				// //cart.unshift(); //vitaskivaem 1 element
+				//}
+
+				// same with splice
+				//извлечь cart.length элементов(все), начиная с 1го = 0индекс
+				//cart.splice(0,cart.lenth);
+
+				//пересчитываем и обновляем корзину
+				updateCart();
+			}
+		}
+	})
+
+	function updateCart()
+	{
+		//sum=0;
+		//idx=0;
+		//while(idx<cart.length){
+		//	sum ==cart[idx].price;
+		//	idx = idx + 1;
+		//}
+
+		// same with reduce
+		sum = cart.reduce(function(sum, product){
+			return sum + product.price;
+		},0);
+		
+		//peredaem summarnui price of products in cart dlya vivoda
+		ui.showBasketPrice(sum);
+
+		//передаем продукты в корзине для вывода содержимого
+		ui.showBasketList(cart);
+
+	}
+	ui.setCategory('Все');
+//})
+</script>
+
+</body>
+</html>
