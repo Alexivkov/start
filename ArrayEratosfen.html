@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script>
+		var numbers = [];
+		var p = 2;
+		
+		for (var i = 2; i < 100; i++) {
+			 numbers[i-2] = i;
+		}
+		for (var i = 0; i < 100; i++){
+			for(j = 99; j > i; j--)
+			if( numbers[j]%numbers[i] == 0) numbers[j] = false;
+		}
+		
+
+		
+
+		var sum = 0;
+		for(i = 0; i< numbers.length - 1; i++)
+		if(!isNaN(numbers[i]) ) 
+		 sum = sum + numbers[i];
+
+
+
+				
+		alert(numbers);
+		alert(sum);
+
+	</script>
+</body>
+</html>
